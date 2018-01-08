@@ -1,34 +1,43 @@
 package com.siddapps.android.refrigeratorsurprise.network
 
 import android.util.Log
-import com.google.gson.GsonBuilder
-import com.siddapps.android.refrigeratorsurprise.data.RecipeDetailsListing
-import com.siddapps.android.refrigeratorsurprise.data.RecipeListing
-import com.siddapps.android.refrigeratorsurprise.utils.Const.Companion.BASE_URL
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
+import rx.Subscriber
+import rx.Subscription
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
+import javax.inject.Inject
 
-class APIClient {
-    val apiService: APIService
+class APIClient @Inject constructor(private val apiInterface: APIInterface) {
     val TAG = "APIClient"
 
-    init {
+    fun getRecipeList(ingredients:String, callback:GetRecipeListCallback):Subscription {
+        return apiInterface.searchRecipesByIngredients(ingredients)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object: Subscriber<RecipeResponse>() {
+                    override fun onNext(recipeResponse: RecipeResponse) {
+                        Log.e(TAG,recipeResponse.toString())
+                        callback.onSuccess(recipeResponse)
+                    }
 
-        val gson = GsonBuilder().setLenient().create()
-        var retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
-        apiService = retrofit.create(APIService::class.java)
+                    override fun onError(e: Throwable?) {
+                        Log.e(TAG,e.toString())
+                        callback.onError(e)
+                    }
+
+                    override fun onCompleted() {
+                        Log.e(TAG, "completed")
+                    }
+
+                })
     }
 
-    fun searchByIngredients(ingredients: List<String>): Call<RecipeListing> {
-        return apiService.searchRecipesByIngredients(ingredients.joinToString(","))
-    }
 
-    fun getRecipeById(recipeID: String): Call<RecipeDetailsListing> {
-        return apiService.getRecipeById(recipeID)
+    interface GetRecipeListCallback {
+        fun onSuccess(recipeResponse: RecipeResponse)
+
+        fun onError(e:Throwable?)
     }
 
 }

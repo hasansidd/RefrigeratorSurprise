@@ -1,68 +1,56 @@
 package com.siddapps.android.refrigeratorsurprise.ui.recipe
 
+import android.content.Context
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
+import android.widget.Toast
 import com.siddapps.android.refrigeratorsurprise.R
-import com.siddapps.android.refrigeratorsurprise.data.RecipeDetailsListing
-import com.siddapps.android.refrigeratorsurprise.data.RecipeListing
+import com.siddapps.android.refrigeratorsurprise.application.RecipeApplication
+import com.siddapps.android.refrigeratorsurprise.data.Recipe
+import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
 import com.siddapps.android.refrigeratorsurprise.network.APIClient
 import kotlinx.android.synthetic.main.activity_recipes.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import javax.inject.Inject
 
-class RecipeActivity : AppCompatActivity() {
+class RecipeActivity : AppCompatActivity(),RecipeView, OnRecipeClickListener {
     private val TAG = "RecipeActivity"
-    val apiClient = APIClient()
-    val id = -1
-    lateinit var recipeListing: RecipeListing
+
+    companion object {
+        private val INGREDIENTS_EXTRA = "ingredients_extra"
+        fun newIntent(context:Context, ingredients:String): Intent {
+           val i = Intent(context, RecipeActivity::class.java)
+            i.putExtra(INGREDIENTS_EXTRA, ingredients )
+            return i
+        }
+    }
+
+    @Inject
+    lateinit var presenter:RecipePresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipes)
+        (application as RecipeApplication).recipeComponent.inject(this)
+        presenter.start(this)
 
-        val ingredients: List<String> = listOf("chicken", "bacon")
-        searchByIngredients(ingredients)
+        val ingredients = intent.getStringExtra(INGREDIENTS_EXTRA)
+        presenter.getRecipeList(ingredients)
     }
 
-    fun searchByIngredients(ingredients: List<String>) {
-        val thing = apiClient.searchByIngredients(ingredients)
-
-        thing.enqueue(object : Callback<RecipeListing> {
-            override fun onResponse(call: Call<RecipeListing>?, response: Response<RecipeListing>?) {
-                Log.e(TAG, response.toString())
-                recipeListing = response?.body()!!
-                val id = recipeListing?.recipes?.get(10)?.recipeID
-                Log.e(TAG, recipeListing?.recipes?.get(10)?.title + " : " + recipeListing?.recipes?.get(10)?.recipeID)
-                // getRecipeById(id!!)
-                setRecylerView()
-            }
-
-            override fun onFailure(call: Call<RecipeListing>?, t: Throwable?) {
-                t?.printStackTrace()
-            }
-
-        })
-    }
-
-    private fun setRecylerView() {
+    override fun displayRecipes(recipeResponse: RecipeResponse) {
         recipe_recyclerview.layoutManager = GridLayoutManager(this, 2)
-        recipe_recyclerview.adapter = RecipeAdapter(this, recipeListing.recipes)
+        recipe_recyclerview.adapter = RecipeAdapter(this, recipeResponse.recipes, this)
     }
 
-    fun getRecipeById(id: String) {
-        val call = apiClient.getRecipeById(id)
-        call.enqueue(object : Callback<RecipeDetailsListing> {
-            override fun onResponse(call: Call<RecipeDetailsListing>?, response: Response<RecipeDetailsListing>?) {
-                Log.e(TAG, response!!.body().toString())
-            }
+    override fun onRecipeClick(recipe: Recipe) {
+        Toast.makeText(this,recipe.title,Toast.LENGTH_LONG).show()
+    }
 
-            override fun onFailure(call: Call<RecipeDetailsListing>?, t: Throwable?) {
-                t?.printStackTrace()
-            }
-
-        })
+    override fun onStop() {
+        super.onStop()
+        presenter.stop()
     }
 }
