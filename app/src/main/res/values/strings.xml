@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Refrigerator Surprise</string>
+    <string name="enter_ingredients">Enter ingredients</string>
 </resources>
