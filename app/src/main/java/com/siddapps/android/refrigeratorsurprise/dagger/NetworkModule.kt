@@ -20,6 +20,7 @@ class NetworkModule {
         val gson = GsonBuilder().setLenient().create()
         return Retrofit.Builder()
                 .baseUrl(Const.BASE_URL)
+                .client(APIClient.getOkHttpClient().build())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()

@@ -42,7 +42,8 @@ class RecipeAdapter(private val context: Context, private val recipes: List<Reci
 
         fun bind(recipe: Recipe) {
             this.recipe = recipe
-            Picasso.with(itemView.context).load(recipe.imageURL).into(recipeImage)
+            val url = recipe.imageURL.substring(0,4) + "s" + recipe.imageURL.substring(4)
+            Picasso.with(itemView.context).load(url).into(recipeImage)
             recipeTitle.text = recipe.title
         }
 

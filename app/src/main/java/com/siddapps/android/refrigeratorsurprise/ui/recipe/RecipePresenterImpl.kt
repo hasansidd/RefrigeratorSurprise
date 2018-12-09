@@ -19,14 +19,15 @@ class RecipePresenterImpl @Inject constructor(private val apiClient: APIClient) 
     }
 
     override fun getRecipeList(ingredients: String) {
+        recipeView.showProgress()
         val subscription: Subscription = apiClient.getRecipeList(ingredients, object : APIClient.GetRecipeListCallback {
             override fun onSuccess(recipeResponse: RecipeResponse) {
-                Log.e(TAG, "success")
+                recipeView.hideProgress()
                 recipeView.displayRecipes(recipeResponse)
             }
 
             override fun onError(e: Throwable?) {
-                Log.e(TAG, "error")
+                recipeView.hideProgress()
             }
 
         })
