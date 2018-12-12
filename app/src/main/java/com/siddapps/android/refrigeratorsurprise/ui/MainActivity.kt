@@ -23,11 +23,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when (item.itemId) {
             R.id.ingredients_menu -> {
-                supportFragmentManager.add {
-                    add(R.id.container, IngredientsFragment())
-                    addToBackStack(IngredientsFragment.TAG)
+//                supportFragmentManager.add {
+//                    add(R.id.container, IngredientsFragment())
+//                    addToBackStack(IngredientsFragment.TAG)
+//                }
+                for (i in 0..supportFragmentManager.backStackEntryCount) {
+                    supportFragmentManager.popBackStack()
                 }
-                true
+                return true
             }
         }
         return true

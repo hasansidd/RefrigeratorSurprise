@@ -24,16 +24,17 @@ public class Toolbar : LinearLayout {
             defStyleAttr: Int,
             defStyleRes: Int)
             : super(context, attrs, defStyleAttr, defStyleRes)
-    lateinit var listener: OnNavigationButtonClickListener
+
+    lateinit var listener: ()->Unit
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_view_toolbar, this, true)
-        navButton.setOnClickListener{
-            listener.onNavigationClick()
+        navButton.setOnClickListener {
+            listener.invoke()
         }
     }
 
-    fun setNavigationButtonClickListener(listener: OnNavigationButtonClickListener) {
+    fun setNavigationButtonClickListener(listener: ()->Unit) {
         this.listener = listener
     }
 

@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_ingredients.*
 
 class IngredientsFragment : Fragment(), IngredientsView {
     companion object {
-        val TAG = "IngredientsFragment"
+        val TAG = "Ingredients"
     }
     var presenter: IngredientsPresenter = IngredientsPresenterImpl()
     val ingredients: MutableList<String> = mutableListOf()
