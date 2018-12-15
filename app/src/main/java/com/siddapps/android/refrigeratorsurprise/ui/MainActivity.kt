@@ -8,9 +8,9 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import com.siddapps.android.refrigeratorsurprise.R
 import com.siddapps.android.refrigeratorsurprise.application.RecipeApplication
-import com.siddapps.android.refrigeratorsurprise.customviews.Toolbar
 import com.siddapps.android.refrigeratorsurprise.ui.ingredients.IngredientsFragment
 import com.siddapps.android.refrigeratorsurprise.utils.add
 import com.siddapps.android.refrigeratorsurprise.utils.hideKeyboard
@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         return true
+    }
+
+    fun setIngredientsChecked() {
+        nav_view.menu.getItem(0).setChecked(true)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +72,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
         })
+
+        val header = nav_view.getHeaderView(0)
+        val backButton = header.findViewById<ImageView>(R.id.back_button)
+        backButton.setOnClickListener {
+            drawer_layout.closeDrawers()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

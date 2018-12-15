@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebViewClient
 import com.siddapps.android.refrigeratorsurprise.R
-import com.siddapps.android.refrigeratorsurprise.customviews.Toolbar
 import kotlinx.android.synthetic.main.fragment_recipe_webview.*
 
 class RecipeWebViewFragment : Fragment() {

@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class RecipeResponse(
         @SerializedName("count") val count: String,
-        @SerializedName("recipes") val recipes: List<Recipe>
+        @SerializedName("recipes") val recipes: MutableList<Recipe>
 )
 
 

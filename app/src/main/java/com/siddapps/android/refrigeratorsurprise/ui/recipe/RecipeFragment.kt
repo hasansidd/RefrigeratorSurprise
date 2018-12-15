@@ -13,7 +13,7 @@ import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
 import com.siddapps.android.refrigeratorsurprise.network.APIClient
 import com.siddapps.android.refrigeratorsurprise.ui.fragments.RecipeWebViewFragment
 import com.siddapps.android.refrigeratorsurprise.utils.add
-import kotlinx.android.synthetic.main.activity_recipes.*
+import kotlinx.android.synthetic.main.fragment_recipes.*
 
 class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     var presenter: RecipePresenter = RecipePresenterImpl(APIClient(APIClient.getRetrofit()))
@@ -33,8 +33,13 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
         super.onAttach(context)
     }
 
+    override fun onStop() {
+        presenter.stop()
+        super.onStop()
+    }
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.activity_recipes, container, false)
+        return inflater?.inflate(R.layout.fragment_recipes, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {

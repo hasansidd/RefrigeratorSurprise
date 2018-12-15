@@ -34,6 +34,6 @@
         android:clickable="true"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/drawer_view"/>
+        app:menu="@menu/main_menu"/>
 
 </android.support.v4.widget.DrawerLayout>
