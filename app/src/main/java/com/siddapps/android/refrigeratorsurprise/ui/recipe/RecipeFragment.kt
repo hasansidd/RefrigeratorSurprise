@@ -57,8 +57,14 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     }
 
     override fun displayRecipes(recipeResponse: RecipeResponse) {
-        recipe_recyclerview.layoutManager = GridLayoutManager(activity, 2)
-        recipe_recyclerview.adapter = RecipeAdapter(activity, recipeResponse.recipes, this)
+        if (recipeResponse.recipes.size > 0) {
+            empty_view.visibility = View.GONE
+            recipe_recyclerview.layoutManager = GridLayoutManager(activity, 2)
+            recipe_recyclerview.adapter = RecipeAdapter(activity, recipeResponse.recipes, this)
+        } else {
+            empty_view.visibility = View.VISIBLE
+        }
+
     }
 
     override fun showProgress() {

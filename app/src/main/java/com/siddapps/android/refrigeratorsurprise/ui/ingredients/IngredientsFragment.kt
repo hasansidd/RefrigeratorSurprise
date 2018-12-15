@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +49,19 @@ class IngredientsFragment : Fragment(), IngredientsView {
 
         ingredients_edit_text.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                presenter.updateList(ingredients_edit_text.text.toString())
+                if (ingredients_edit_text.text.toString().contains("add ")) {
+                    val num = ingredients_edit_text.text.toString().subSequence(4, ingredients_edit_text.text.toString().length).toString()
+                    try {
+                        val numString: Int = num.toInt()
+                        for (i in 0..numString) {
+                            presenter.updateList("Ingredient $i")
+                        }
+                    } catch (e: Exception) {
+                        Log.d(TAG, e.toString())
+                    }
+                } else {
+                    presenter.updateList(ingredients_edit_text.text.toString())
+                }
                 ingredients_edit_text.setText("")
                 true
             } else {
@@ -87,25 +100,6 @@ class IngredientsFragment : Fragment(), IngredientsView {
         }
         ingredients_edit_text.clearFocus()
         ingredients_edit_text.hideKeyboard()
-
-        presenter.updateList("Chicken")
-        presenter.updateList("Lettuce")
-        presenter.updateList("Cheese")
-        presenter.updateList("Chicken")
-        presenter.updateList("Chicken")
-        presenter.updateList("Lettuce")
-        presenter.updateList("Cheese")
-        presenter.updateList("Chicken")
-
-        presenter.updateList("Chicken")
-        presenter.updateList("Lettuce")
-        presenter.updateList("Cheese")
-        presenter.updateList("Chicken")
-        presenter.updateList("Chicken")
-        presenter.updateList("Lettuce")
-        presenter.updateList("Cheese")
-        presenter.updateList("Chicken")
-
 
         val itemTouchCallback = object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?): Int {
