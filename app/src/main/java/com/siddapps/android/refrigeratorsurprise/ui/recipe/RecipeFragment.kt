@@ -16,8 +16,9 @@ import com.siddapps.android.refrigeratorsurprise.utils.add
 import kotlinx.android.synthetic.main.fragment_recipes.*
 
 class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
-    var presenter: RecipePresenter = RecipePresenterImpl(APIClient(APIClient.getRetrofit()))
+    var presenter: RecipePresenter = RecipePresenterImpl(APIClient(APIClient.getRetrofit()), APIClient(APIClient.getRetrofitCoroutines()))
     var ingredients: String? = null
+    lateinit var recipes: MutableList<Recipe>
 
     companion object {
         val TAG = "RecipeFragment"
@@ -46,6 +47,13 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
         super.onViewCreated(view, savedInstanceState)
         if (ingredients != null) {
             presenter.getRecipeList(ingredients!!)
+            { recipeIngredients, i ->
+                for (recipe in recipes) {
+                    recipe.title = recipeIngredients.recipe.ingredients.toString()
+                }
+                val adapter = recipe_recyclerview.adapter as RecipeAdapter
+                adapter.update(recipes)
+            }
         }
     }
 
@@ -57,6 +65,7 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     }
 
     override fun displayRecipes(recipeResponse: RecipeResponse) {
+        this.recipes = recipeResponse.recipes
         if (recipeResponse.recipes.size > 0) {
             empty_view.visibility = View.GONE
             recipe_recyclerview.layoutManager = GridLayoutManager(activity, 2)

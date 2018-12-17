@@ -15,7 +15,7 @@ class PresenterModule {
     @Singleton
     fun provideIngredientsPresenter(): IngredientsPresenter = IngredientsPresenterImpl()
 
-    @Provides
-    @Singleton
-    fun provideRecipePresenter(apiClient: APIClient): RecipePresenter = RecipePresenterImpl(apiClient)
+//    @Provides
+//    @Singleton
+//    fun provideRecipePresenter(apiClient: APIClient): RecipePresenter = RecipePresenterImpl(apiClient)
 }

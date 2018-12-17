@@ -10,7 +10,7 @@ class IngredientsPresenterImpl:IngredientsPresenter {
     }
 
     override fun updateList(ingredient: String) {
-        ingredientList.add(ingredient)
+        ingredientList.add(0, ingredient)
         ingredientsView.updateIngredients(ingredientList)
     }
 

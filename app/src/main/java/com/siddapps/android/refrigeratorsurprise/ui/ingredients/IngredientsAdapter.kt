@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,16 +12,15 @@ import com.siddapps.android.refrigeratorsurprise.R
 
 class IngredientsAdapter(private var ingredients: List<String>, private val context: Context, private val listener: OnIngredientsClicked) :
         RecyclerView.Adapter<IngredientsAdapter.IngredientsHolder>() {
-    private var lastPosition: Int = -1
+    private var lastSize: Int = -1
 
     override fun onBindViewHolder(holder: IngredientsHolder, position: Int) {
         holder.bind(ingredients[position])
-        if (position > lastPosition) {
+        if (ingredients.size > lastSize && position == 0) {
             animateTextSizeChange(holder.ingredientTitle, 0.5f, 0).start()
-            animateTextSizeChange(holder.ingredientTitle, 1f, 200).start()
-            lastPosition = position
-            return
+            animateTextSizeChange(holder.ingredientTitle, 1f, 250).start()
         }
+        lastSize = ingredients.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): IngredientsHolder {

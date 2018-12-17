@@ -13,7 +13,7 @@ import com.siddapps.android.refrigeratorsurprise.data.Recipe
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
-class RecipeAdapter(private val context: Context, private val recipes: MutableList<Recipe>, private val listener: OnRecipeClickListener) :
+class RecipeAdapter(private val context: Context, private var recipes: MutableList<Recipe>, private val listener: OnRecipeClickListener) :
         RecyclerView.Adapter<RecipeAdapter.RecipeHolder>() {
     private val TAG = "RecipeAdapter"
 
@@ -31,6 +31,11 @@ class RecipeAdapter(private val context: Context, private val recipes: MutableLi
 
     override fun onBindViewHolder(holder: RecipeHolder?, position: Int) {
         holder?.bind(recipes[position])
+    }
+
+    fun update(recipes: MutableList<Recipe>) {
+        this.recipes = recipes
+        notifyDataSetChanged()
     }
 
 
