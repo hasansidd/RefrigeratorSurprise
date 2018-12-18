@@ -5,14 +5,15 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.siddapps.android.refrigeratorsurprise.data.RecipeDetailsResponse
 import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
 import com.siddapps.android.refrigeratorsurprise.utils.Const
-import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -44,6 +45,15 @@ class APIClient @Inject constructor(private val apiInterface: APIInterface) {
             return retrofit.create(APIInterface::class.java)
         }
 
+        fun getRetrofitForHtml(url: String): APIInterface {
+            val retrofit = Retrofit.Builder()
+                    .baseUrl(url)
+                    .client(APIClient.getOkHttpClient().build())
+                    .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                    .build()
+            return retrofit.create(APIInterface::class.java)
+        }
+
         fun getRetrofitCoroutines(): APIInterface {
             val gson = GsonBuilder().setLenient().create()
             val retrofit = Retrofit.Builder()
@@ -56,7 +66,7 @@ class APIClient @Inject constructor(private val apiInterface: APIInterface) {
         }
     }
 
-    fun getRecipeList(ingredients: String, subscribe: (Disposable)-> Unit, success: (RecipeResponse)->Unit, failure: (String)->Unit) {
+    fun getRecipeList(ingredients: String, subscribe: (Disposable) -> Unit, success: (RecipeResponse) -> Unit, failure: (String) -> Unit) {
         return apiInterface.searchRecipesByIngredients(ingredients)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -82,6 +92,13 @@ class APIClient @Inject constructor(private val apiInterface: APIInterface) {
         return apiInterface.getRecipeById(id)
     }
 
+    fun getRecipeHtml(url: String): Call<ResponseBody> {
+        var urlHttps = url.substring(0, 4) + "s" + url.substring(4)
+        if (!urlHttps[urlHttps.length - 1].equals("/")) {
+            urlHttps += "/"
+        }
+        return getRetrofitForHtml(urlHttps).getRecipeHtml()
+    }
 
     interface GetRecipeListCallback {
         fun onSuccess(recipeResponse: RecipeResponse)

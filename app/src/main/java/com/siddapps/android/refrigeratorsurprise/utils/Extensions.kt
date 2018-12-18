@@ -8,10 +8,12 @@ import android.support.v4.app.FragmentTransaction
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import com.siddapps.android.refrigeratorsurprise.R
 
 inline fun FragmentManager.add(func: FragmentTransaction.() -> Unit) {
     val fragmentTransaction = beginTransaction()
     fragmentTransaction.func()
+    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
     fragmentTransaction.commit()
 }
 

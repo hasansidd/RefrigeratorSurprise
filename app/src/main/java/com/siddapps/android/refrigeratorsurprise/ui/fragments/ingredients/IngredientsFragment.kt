@@ -1,4 +1,4 @@
-package com.siddapps.android.refrigeratorsurprise.ui.ingredients
+package com.siddapps.android.refrigeratorsurprise.ui.fragments.ingredients
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
@@ -15,7 +15,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.siddapps.android.refrigeratorsurprise.R
 import com.siddapps.android.refrigeratorsurprise.ui.MainActivity
-import com.siddapps.android.refrigeratorsurprise.ui.recipe.RecipeFragment
+import com.siddapps.android.refrigeratorsurprise.ui.fragments.recipe.RecipeFragment
 import com.siddapps.android.refrigeratorsurprise.utils.add
 import com.siddapps.android.refrigeratorsurprise.utils.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_ingredients.*
@@ -93,6 +93,7 @@ class IngredientsFragment : Fragment(), IngredientsView {
                 animLarge.start()
             } else {
                 fragmentManager.add {
+                    this.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
                     add(R.id.container, RecipeFragment.newInstance(ingredients = ingredients.joinToString(",")))
                     addToBackStack(RecipeFragment.TAG)
                 }

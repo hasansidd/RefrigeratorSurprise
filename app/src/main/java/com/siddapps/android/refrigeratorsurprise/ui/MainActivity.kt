@@ -11,7 +11,7 @@ import android.view.View
 import android.widget.ImageView
 import com.siddapps.android.refrigeratorsurprise.R
 import com.siddapps.android.refrigeratorsurprise.application.RecipeApplication
-import com.siddapps.android.refrigeratorsurprise.ui.ingredients.IngredientsFragment
+import com.siddapps.android.refrigeratorsurprise.ui.fragments.ingredients.IngredientsFragment
 import com.siddapps.android.refrigeratorsurprise.utils.add
 import com.siddapps.android.refrigeratorsurprise.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_main.*

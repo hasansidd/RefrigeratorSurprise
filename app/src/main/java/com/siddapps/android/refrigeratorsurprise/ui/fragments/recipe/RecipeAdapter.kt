@@ -1,4 +1,4 @@
-package com.siddapps.android.refrigeratorsurprise.ui.recipe
+package com.siddapps.android.refrigeratorsurprise.ui.fragments.recipe
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView

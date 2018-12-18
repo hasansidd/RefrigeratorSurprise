@@ -13,8 +13,8 @@
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.recipe.RecipeActivity"/>
-        <activity android:name=".ui.ingredients.IngredientsActivity">
+        <activity android:name="com.siddapps.android.refrigeratorsurprise.ui.fragments.recipe.RecipeActivity"/>
+        <activity android:name="com.siddapps.android.refrigeratorsurprise.ui.fragments.ingredients.IngredientsActivity">
 
         </activity>
         <activity android:name=".ui.MainActivity">

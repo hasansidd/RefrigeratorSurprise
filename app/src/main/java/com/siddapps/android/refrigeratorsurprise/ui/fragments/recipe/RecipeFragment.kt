@@ -1,4 +1,4 @@
-package com.siddapps.android.refrigeratorsurprise.ui.recipe
+package com.siddapps.android.refrigeratorsurprise.ui.fragments.recipe
 
 import android.content.Context
 import android.os.Bundle
@@ -13,6 +13,7 @@ import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
 import com.siddapps.android.refrigeratorsurprise.network.APIClient
 import com.siddapps.android.refrigeratorsurprise.ui.fragments.RecipeWebViewFragment
 import com.siddapps.android.refrigeratorsurprise.utils.add
+import com.siddapps.android.refrigeratorsurprise.utils.print
 import kotlinx.android.synthetic.main.fragment_recipes.*
 
 class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
@@ -58,9 +59,13 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     }
 
     override fun onRecipeClick(recipe: Recipe) {
-        fragmentManager.add {
-            add(R.id.container, RecipeWebViewFragment.newInstance(recipe.sourceURL))
-                    .addToBackStack(RecipeWebViewFragment.TAG)
+//        fragmentManager.add {
+//            this.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+//            add(R.id.container, RecipeWebViewFragment.newInstance(recipe.sourceURL))
+//            addToBackStack(RecipeWebViewFragment.TAG)
+//        }
+        presenter.getRecipeHtml(recipe.sourceURL) {
+            activity.print(it.toString())
         }
     }
 

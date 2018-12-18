@@ -1,5 +1,6 @@
-package com.siddapps.android.refrigeratorsurprise.ui.ingredients
+package com.siddapps.android.refrigeratorsurprise.ui.fragments.ingredients
 
+import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
@@ -17,8 +18,25 @@ class IngredientsAdapter(private var ingredients: List<String>, private val cont
     override fun onBindViewHolder(holder: IngredientsHolder, position: Int) {
         holder.bind(ingredients[position])
         if (ingredients.size > lastSize && position == 0) {
-            animateTextSizeChange(holder.ingredientTitle, 0.5f, 0).start()
-            animateTextSizeChange(holder.ingredientTitle, 1f, 250).start()
+            animateTextSizeChange(holder.ingredientTitle, 0.1f, 0).start()
+
+            val anim = animateTextSizeChange(holder.ingredientTitle, 1.3f, 200)
+            anim.addListener(object : Animator.AnimatorListener{
+                override fun onAnimationRepeat(p0: Animator?) {
+                }
+
+                override fun onAnimationEnd(p0: Animator?) {
+                    animateTextSizeChange(holder.ingredientTitle, 1.0f, 150).start()
+                }
+
+                override fun onAnimationCancel(p0: Animator?) {
+                }
+
+                override fun onAnimationStart(p0: Animator?) {
+                }
+
+            })
+            anim.start()
         }
         lastSize = ingredients.size
     }
