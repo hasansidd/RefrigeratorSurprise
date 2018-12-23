@@ -1,5 +1,8 @@
 package com.siddapps.android.refrigeratorsurprise.utils
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.app.Activity
 import android.content.Context
 import android.support.v4.app.Fragment
@@ -8,12 +11,10 @@ import android.support.v4.app.FragmentTransaction
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import com.siddapps.android.refrigeratorsurprise.R
 
 inline fun FragmentManager.add(func: FragmentTransaction.() -> Unit) {
     val fragmentTransaction = beginTransaction()
     fragmentTransaction.func()
-    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
     fragmentTransaction.commit()
 }
 
@@ -29,6 +30,38 @@ fun View.hideKeyboard() {
     imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
-fun Activity.print(string: String) {
+fun Activity.print(string: String?) {
     Log.e(this::class.java.simpleName, string)
+}
+
+fun String.httpToHttps(): String {
+    return this.substring(0, 4) + "s" + this.substring(4)
+}
+
+fun View.pulse(scale: Float, duration: Long) {
+    val xScale = PropertyValuesHolder.ofFloat("scaleX", scale)
+    val yScale = PropertyValuesHolder.ofFloat("scaleY", scale)
+    val anim = ObjectAnimator.ofPropertyValuesHolder(this, xScale, yScale)
+    anim.duration = duration
+
+    anim.addListener(object : Animator.AnimatorListener {
+        override fun onAnimationRepeat(p0: Animator?) {
+        }
+
+        override fun onAnimationEnd(p0: Animator?) {
+            val xScale2 = PropertyValuesHolder.ofFloat("scaleX", 1.0F)
+            val yScale2 = PropertyValuesHolder.ofFloat("scaleY", 1.0F)
+            val anim2 = ObjectAnimator.ofPropertyValuesHolder(this, xScale2, yScale2)
+            anim2.duration = duration
+            anim2.start()
+        }
+
+        override fun onAnimationCancel(p0: Animator?) {
+        }
+
+        override fun onAnimationStart(p0: Animator?) {
+        }
+
+    })
+    anim.start()
 }

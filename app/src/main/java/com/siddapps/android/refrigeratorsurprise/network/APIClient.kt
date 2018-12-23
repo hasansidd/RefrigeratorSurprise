@@ -5,6 +5,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.siddapps.android.refrigeratorsurprise.data.RecipeDetailsResponse
 import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
 import com.siddapps.android.refrigeratorsurprise.utils.Const
+import com.siddapps.android.refrigeratorsurprise.utils.httpToHttps
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -93,7 +94,7 @@ class APIClient @Inject constructor(private val apiInterface: APIInterface) {
     }
 
     fun getRecipeHtml(url: String): Call<ResponseBody> {
-        var urlHttps = url.substring(0, 4) + "s" + url.substring(4)
+        var urlHttps = url.httpToHttps()
         if (!urlHttps[urlHttps.length - 1].equals("/")) {
             urlHttps += "/"
         }

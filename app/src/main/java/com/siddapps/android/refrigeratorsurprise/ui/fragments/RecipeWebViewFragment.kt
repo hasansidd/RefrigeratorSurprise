@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebViewClient
 import com.siddapps.android.refrigeratorsurprise.R
+import com.siddapps.android.refrigeratorsurprise.utils.httpToHttps
 import kotlinx.android.synthetic.main.fragment_recipe_webview.*
 
 class RecipeWebViewFragment : Fragment() {
@@ -28,7 +29,7 @@ class RecipeWebViewFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         webView.webViewClient = WebViewClient()
-        val url = recipeURL.substring(0,4) + "s" + recipeURL.substring(4)
+        val url = recipeURL.httpToHttps()
         webView.loadUrl(url)
     }
 }

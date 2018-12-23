@@ -49,21 +49,21 @@ class RecipePresenterImpl @Inject constructor(private val apiClient: APIClient, 
         }
     }
 
-    override fun getRecipeHtml(url: String, success: (String) -> Unit) {
+    override fun getRecipeHtml(url: String, success: (String?) -> Unit) {
         val result = apiClient.getRecipeHtml(url).enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 success.invoke(t.localizedMessage)
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                success.invoke(response.body().toString())
+                success.invoke(response.body()?.string())
             }
 
         })
     }
 
     override fun stop() {
-        disposable.dispose()
+        disposable.clear()
     }
 
 }

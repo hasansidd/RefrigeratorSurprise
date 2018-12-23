@@ -1,5 +1,8 @@
 package com.siddapps.android.refrigeratorsurprise.utils
 
+import android.content.Context
+import android.util.Log
+
 class Const {
     companion object {
         const val BASE_URL = "http://food2fork.com/api/"

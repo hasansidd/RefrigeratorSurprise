@@ -23,10 +23,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when (item.itemId) {
             R.id.ingredients_menu -> {
-//                supportFragmentManager.add {
-//                    add(R.id.container, IngredientsFragment())
-//                    addToBackStack(IngredientsFragment.TAG)
-//                }
                 for (i in 0..supportFragmentManager.backStackEntryCount) {
                     supportFragmentManager.popBackStack()
                 }
@@ -38,6 +34,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun setIngredientsChecked() {
         nav_view.menu.getItem(0).setChecked(true)
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStackImmediate()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +82,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         backButton.setOnClickListener {
             drawer_layout.closeDrawers()
         }
+    }
+
+    public fun setHeaderTitle(string: String) {
+        val actionbar: ActionBar? = supportActionBar
+        actionbar?.title = string
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

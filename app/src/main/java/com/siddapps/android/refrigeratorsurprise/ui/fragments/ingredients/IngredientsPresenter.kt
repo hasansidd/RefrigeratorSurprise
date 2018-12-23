@@ -5,4 +5,6 @@ interface IngredientsPresenter {
     fun start(ingredientsView: IngredientsView, ingredientList: MutableList<String>)
 
     fun updateList(ingredient:String)
+
+    fun stop()
 }

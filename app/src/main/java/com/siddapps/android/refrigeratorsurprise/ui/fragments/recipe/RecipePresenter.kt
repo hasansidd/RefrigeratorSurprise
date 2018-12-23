@@ -10,7 +10,7 @@ interface RecipePresenter {
 
     fun getRecipeDetails(list: MutableList<Recipe>, success: (RecipeDetailsResponse, Int) -> Unit)
 
-    fun getRecipeHtml(url: String, success: (String) -> Unit)
+    fun getRecipeHtml(url: String, success: (String?) -> Unit)
 
     fun stop()
 }

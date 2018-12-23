@@ -18,6 +18,7 @@ import com.siddapps.android.refrigeratorsurprise.ui.MainActivity
 import com.siddapps.android.refrigeratorsurprise.ui.fragments.recipe.RecipeFragment
 import com.siddapps.android.refrigeratorsurprise.utils.add
 import com.siddapps.android.refrigeratorsurprise.utils.hideKeyboard
+import com.siddapps.android.refrigeratorsurprise.utils.pulse
 import kotlinx.android.synthetic.main.fragment_ingredients.*
 
 
@@ -46,7 +47,7 @@ class IngredientsFragment : Fragment(), IngredientsView {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        (activity as MainActivity).setHeaderTitle("Ingredients")
         ingredients_edit_text.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (ingredients_edit_text.text.toString().contains("add ")) {
@@ -70,6 +71,7 @@ class IngredientsFragment : Fragment(), IngredientsView {
         }
 
         presenter.start(this, ingredients)
+        presenter.updateList("chicken")
         displayIngredients(ingredients)
 
         fab.setOnClickListener {
@@ -91,6 +93,7 @@ class IngredientsFragment : Fragment(), IngredientsView {
                     }
                 })
                 animLarge.start()
+//                add_ingredients_text_view.pulse(1.2f, 200)
             } else {
                 fragmentManager.add {
                     this.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
@@ -142,8 +145,8 @@ class IngredientsFragment : Fragment(), IngredientsView {
 
     override fun updateIngredients(ingredientsList: List<String>) {
         setEmptyViewIfNeeded()
-        val adapter: IngredientsAdapter = ingredients_rv.adapter as IngredientsAdapter
-        adapter.update(ingredientsList)
+        val adapter: IngredientsAdapter? = ingredients_rv.adapter as? IngredientsAdapter
+        adapter?.update(ingredientsList)
     }
 
     private fun setEmptyViewIfNeeded() {

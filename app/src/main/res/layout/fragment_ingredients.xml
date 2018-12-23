@@ -20,7 +20,7 @@
         android:paddingLeft="16dp"
         android:singleLine="true"
         android:textColor="@color/colorGrey"
-        android:textColorHint="@color/colorGreyMedium"
+        android:textColorHint="@color/colorGrey"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

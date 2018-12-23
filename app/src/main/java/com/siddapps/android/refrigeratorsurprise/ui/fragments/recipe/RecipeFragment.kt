@@ -2,24 +2,35 @@ package com.siddapps.android.refrigeratorsurprise.ui.fragments.recipe
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.GridLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.siddapps.android.refrigeratorsurprise.HtmlParser
 import com.siddapps.android.refrigeratorsurprise.R
 import com.siddapps.android.refrigeratorsurprise.data.Recipe
 import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
 import com.siddapps.android.refrigeratorsurprise.network.APIClient
-import com.siddapps.android.refrigeratorsurprise.ui.fragments.RecipeWebViewFragment
+import com.siddapps.android.refrigeratorsurprise.ui.MainActivity
+import com.siddapps.android.refrigeratorsurprise.ui.fragments.recipedetails.RecipeDetailsFragment
 import com.siddapps.android.refrigeratorsurprise.utils.add
-import com.siddapps.android.refrigeratorsurprise.utils.print
+import com.siddapps.android.refrigeratorsurprise.utils.pulse
+import kotlinx.android.synthetic.main.fragment_ingredients.*
 import kotlinx.android.synthetic.main.fragment_recipes.*
+import kotlinx.coroutines.*
+import java.util.*
+
 
 class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     var presenter: RecipePresenter = RecipePresenterImpl(APIClient(APIClient.getRetrofit()), APIClient(APIClient.getRetrofitCoroutines()))
     var ingredients: String? = null
-    lateinit var recipes: MutableList<Recipe>
+    var savedState: Bundle? = null
+    var recipes: MutableList<Recipe>? = null
+    var job: Job? = null
 
     companion object {
         val TAG = "RecipeFragment"
@@ -41,42 +52,80 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        if (savedState != null) {
+            val array = savedState?.getParcelableArray("recipes")
+            recipes = mutableListOf(array) as MutableList<Recipe>
+        }
         return inflater?.inflate(R.layout.fragment_recipes, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (ingredients != null) {
-            presenter.getRecipeList(ingredients!!)
-            { recipeIngredients, i ->
-                for (recipe in recipes) {
-                    recipe.title = recipeIngredients.recipe.ingredients.toString()
+        (activity as MainActivity).setHeaderTitle("Recipes")
+
+        if (recipes != null && recipes!!.size > 0) {
+            recipe_recyclerview.adapter = RecipeAdapter(activity, recipes!!, this)
+            recipe_recyclerview.layoutManager = GridLayoutManager(activity, 2)
+            val adapter = recipe_recyclerview.adapter as RecipeAdapter
+            adapter.update(recipes)
+        } else {
+            if (ingredients != null) {
+                presenter.getRecipeList(ingredients!!)
+                { recipeIngredients, i ->
+                    val adapter = recipe_recyclerview.adapter as RecipeAdapter
+                    for (recipe in recipes!!) {
+                        recipe.title = recipeIngredients.recipe.ingredients.toString()
+                    }
+                    adapter.update(recipes)
                 }
-                val adapter = recipe_recyclerview.adapter as RecipeAdapter
-                adapter.update(recipes)
             }
         }
     }
 
-    override fun onRecipeClick(recipe: Recipe) {
-//        fragmentManager.add {
-//            this.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-//            add(R.id.container, RecipeWebViewFragment.newInstance(recipe.sourceURL))
-//            addToBackStack(RecipeWebViewFragment.TAG)
-//        }
-        presenter.getRecipeHtml(recipe.sourceURL) {
-            activity.print(it.toString())
-        }
+    override fun onRecipeClick(recipe: Recipe, view: View?) {
+        job = GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, null, {
+            val recipeDetails = HtmlParser.parse(recipe.sourceURL)
+            recipeDetails?.name = recipe.title
+            recipeDetails?.imageUrl = recipe.imageURL
+            fragmentManager.add {
+                val imageView: View? = view?.findViewById(R.id.recipe_image)
+                val textView: View? = view?.findViewById(R.id.recipe_title)
+
+                val recipeDetailsFragment = RecipeDetailsFragment.newInstance(recipeDetails,
+//                        ViewCompat.getTransitionName(imageView),
+                        ViewCompat.getTransitionName(imageView),
+                        ViewCompat.getTransitionName(textView))
+
+                addSharedElement(view?.findViewById(R.id.recipe_image), ViewCompat.getTransitionName(imageView))
+                addSharedElement(view?.findViewById(R.id.recipe_title), ViewCompat.getTransitionName(textView))
+                addToBackStack(RecipeDetailsFragment::class.java.simpleName)
+                replace(R.id.container, recipeDetailsFragment, tag)
+
+            }
+        })
     }
 
     override fun displayRecipes(recipeResponse: RecipeResponse) {
         this.recipes = recipeResponse.recipes
+        setEmptyViewIfNeeded()
+
         if (recipeResponse.recipes.size > 0) {
-            empty_view.visibility = View.GONE
             recipe_recyclerview.layoutManager = GridLayoutManager(activity, 2)
-            recipe_recyclerview.adapter = RecipeAdapter(activity, recipeResponse.recipes, this)
-        } else {
-            empty_view.visibility = View.VISIBLE
+
+            var recipeRemove: MutableList<Recipe>? = null
+            recipeRemove = mutableListOf()
+            for (recipe in recipes!!) {
+                if (!recipe.sourceURL.contains(HtmlParser.CLOSET_COOKING) &&
+                        !recipe.sourceURL.contains(HtmlParser.PIONEER_WOMAN) &&
+                        !recipe.sourceURL.contains(HtmlParser.ALL_RECIPES)) {
+                    Log.e("removing URL", recipe.sourceURL)
+                    recipeRemove.add(recipe)
+                }
+            }
+            recipes!!.removeAll(recipeRemove)
+
+
+            recipe_recyclerview.adapter = RecipeAdapter(activity, recipes!!, this)
         }
 
     }
@@ -89,5 +138,33 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     override fun hideProgress() {
         progress_bar.visibility = View.INVISIBLE
         recipe_recyclerview.visibility = View.VISIBLE
+    }
+
+    private fun setEmptyViewIfNeeded() {
+        if (recipes!!.isEmpty()) {
+            empty_view_recipe.visibility = View.VISIBLE
+        } else {
+            empty_view_recipe.visibility = View.GONE
+        }
+    }
+
+    override fun onPause() {
+        if (job != null) {
+            job!!.cancel()
+            Log.e("TAG", "cancled")
+        } else {
+            Log.e("TAG", "not canclled")
+        }
+        super.onPause()
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val arrayList: ArrayList<Recipe> = ArrayList()
+        for (recipe in recipes!!) {
+            arrayList.add(recipe)
+        }
+        savedState?.putParcelableArray("recipes", arrayList.toArray() as Array<Parcelable>?)
     }
 }

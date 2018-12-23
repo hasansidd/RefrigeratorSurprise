@@ -3,5 +3,8 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">static.food2fork.com</domain>
         <domain includeSubdomains="true">food2fork.com</domain>
+        <domain includeSubdomains="true">www.closetcooking.com</domain>
+        <domain includeSubdomains="true">thepioneerwoman.com</domain>
+        <domain includeSubdomains="true">allrecipes.com</domain>
     </domain-config>
 </network-security-config>
