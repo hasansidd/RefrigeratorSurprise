@@ -37,6 +37,7 @@ class RecipeAdapter(private val context: Context, private var recipes: MutableLi
 
     override fun onBindViewHolder(holder: RecipeHolder?, position: Int) {
         ViewCompat.setTransitionName(holder?.recipeImage, recipes[position].title)
+        ViewCompat.setTransitionName(holder?.shadow, recipes[position].title+" shadow")
         ViewCompat.setTransitionName(holder?.recipeTitle, recipes[position].title+"text")
 
         holder?.bind(recipes[position])
@@ -51,6 +52,7 @@ class RecipeAdapter(private val context: Context, private var recipes: MutableLi
         val container: View = view.findViewById(R.id.container)
         val recipeImage: ImageView = view.findViewById(R.id.recipe_image)
         val recipeTitle: TextView = view.findViewById(R.id.recipe_title)
+        val shadow: View = view.findViewById(R.id.shadow)
         lateinit var recipe:Recipe
         private val TAG = "RecipeHolder"
 

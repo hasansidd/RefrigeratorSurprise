@@ -10,10 +10,11 @@ data class RecipeDetails(
         @SerializedName("serving") var serving: String?,
         var name: String?,
         var imageUrl: String?,
+        var sourceUrl: String?,
         val bitmap: Bitmap?
 
 ) {
-    constructor() : this(mutableListOf<String>(), mutableListOf<String>(), mutableMapOf(), null, null, null, null)
+    constructor() : this(mutableListOf<String>(), mutableListOf<String>(), mutableMapOf(), null, null, null, null,null)
 
     override fun toString(): String {
         var string = "\n"

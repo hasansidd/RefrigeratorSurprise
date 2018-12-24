@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.siddapps.android.refrigeratorsurprise.R
 import com.siddapps.android.refrigeratorsurprise.data.RecipeDetailItem
 
-class RecipeDetailAdapter(private val context:Context, private val items: MutableList<RecipeDetailItem>) : RecyclerView.Adapter<RecipeDetailAdapter.RecipeDetailViewHolder>() {
+class RecipeDetailAdapter(private val context:Context, private var items: MutableList<RecipeDetailItem>) : RecyclerView.Adapter<RecipeDetailAdapter.RecipeDetailViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecipeDetailViewHolder {
         val v: View?
         v = if (viewType == 1) {
@@ -30,6 +30,11 @@ class RecipeDetailAdapter(private val context:Context, private val items: Mutabl
         } else {
             1
         }
+    }
+
+    fun update(items: MutableList<RecipeDetailItem>) {
+        this.items = items
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: RecipeDetailViewHolder?, position: Int) {

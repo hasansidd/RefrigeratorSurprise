@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import com.siddapps.android.refrigeratorsurprise.HtmlParser
 import com.siddapps.android.refrigeratorsurprise.R
 import com.siddapps.android.refrigeratorsurprise.data.Recipe
+import com.siddapps.android.refrigeratorsurprise.data.RecipeDetails
 import com.siddapps.android.refrigeratorsurprise.data.RecipeResponse
 import com.siddapps.android.refrigeratorsurprise.network.APIClient
 import com.siddapps.android.refrigeratorsurprise.ui.MainActivity
@@ -83,26 +84,33 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     }
 
     override fun onRecipeClick(recipe: Recipe, view: View?) {
-        job = GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, null, {
-            val recipeDetails = HtmlParser.parse(recipe.sourceURL)
-            recipeDetails?.name = recipe.title
-            recipeDetails?.imageUrl = recipe.imageURL
-            fragmentManager.add {
-                val imageView: View? = view?.findViewById(R.id.recipe_image)
-                val textView: View? = view?.findViewById(R.id.recipe_title)
+        val recipeDetails = RecipeDetails()
+        recipeDetails?.name = recipe.title
+        recipeDetails?.imageUrl = recipe.imageURL
+        recipeDetails?.sourceUrl = recipe.sourceURL
 
-                val recipeDetailsFragment = RecipeDetailsFragment.newInstance(recipeDetails,
+        fragmentManager.add {
+            val imageView: View? = view?.findViewById(R.id.recipe_image)
+            val textView: View? = view?.findViewById(R.id.recipe_title)
+            val shadowView: View? = view?.findViewById(R.id.shadow)
+
+            val recipeDetailsFragment = RecipeDetailsFragment.newInstance(recipeDetails,
 //                        ViewCompat.getTransitionName(imageView),
-                        ViewCompat.getTransitionName(imageView),
-                        ViewCompat.getTransitionName(textView))
+                    ViewCompat.getTransitionName(imageView),
+                    ViewCompat.getTransitionName(textView),
+                    ViewCompat.getTransitionName(shadowView))
 
-                addSharedElement(view?.findViewById(R.id.recipe_image), ViewCompat.getTransitionName(imageView))
-                addSharedElement(view?.findViewById(R.id.recipe_title), ViewCompat.getTransitionName(textView))
-                addToBackStack(RecipeDetailsFragment::class.java.simpleName)
-                replace(R.id.container, recipeDetailsFragment, tag)
+            addSharedElement(view?.findViewById(R.id.recipe_image), ViewCompat.getTransitionName(imageView))
+            addSharedElement(view?.findViewById(R.id.recipe_title), ViewCompat.getTransitionName(textView))
+            addSharedElement(view?.findViewById(R.id.shadow), ViewCompat.getTransitionName(shadowView))
+            addToBackStack(RecipeDetailsFragment::class.java.simpleName)
+            replace(R.id.container, recipeDetailsFragment, tag)
 
-            }
-        })
+        }
+
+//        job = GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, null, {
+//            val recipeDetails = HtmlParser.parse(recipe.sourceURL)
+//        })
     }
 
     override fun displayRecipes(recipeResponse: RecipeResponse) {
