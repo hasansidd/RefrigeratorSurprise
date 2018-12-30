@@ -19,12 +19,20 @@
 
     <style name="TextViewCollapsed" parent="TextAppearance.AppCompat.Title">
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">gilroyextrabold</item>
         <item name="android:textSize">16dp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextViewExpanded" parent="TextAppearance.AppCompat.Title">
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">gilroyextrabold</item>
+        <item name="android:textSize">28dp</item>
+    </style>
+
+    <style name="TextViewNavbar" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">gilroyextrabold</item>
         <item name="android:textSize">28dp</item>
     </style>
 

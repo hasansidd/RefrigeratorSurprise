@@ -19,8 +19,4 @@ interface APIInterface {
 
     @GET("get?key=" + API_KEY)
     fun getRecipeById(@Query("rId") id: String): Deferred<RecipeDetailsResponse>
-
-    @GET(".")
-    fun getRecipeHtml() : Call<ResponseBody>
-
 }

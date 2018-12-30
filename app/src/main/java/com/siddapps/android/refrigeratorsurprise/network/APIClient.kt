@@ -93,14 +93,6 @@ class APIClient @Inject constructor(private val apiInterface: APIInterface) {
         return apiInterface.getRecipeById(id)
     }
 
-    fun getRecipeHtml(url: String): Call<ResponseBody> {
-        var urlHttps = url.httpToHttps()
-        if (!urlHttps[urlHttps.length - 1].equals("/")) {
-            urlHttps += "/"
-        }
-        return getRetrofitForHtml(urlHttps).getRecipeHtml()
-    }
-
     interface GetRecipeListCallback {
         fun onSuccess(recipeResponse: RecipeResponse)
 

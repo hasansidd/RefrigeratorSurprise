@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="32dp"
+        android:fontFamily="gilroyextrabold"
         android:hint="@string/enter_ingredients"
         android:imeOptions="actionDone"
         android:paddingLeft="16dp"
@@ -53,6 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:fontFamily="gilroylight"
             android:text="Please add ingredients to your list"
             android:textColor="@android:color/white"
             android:textSize="16dp" />

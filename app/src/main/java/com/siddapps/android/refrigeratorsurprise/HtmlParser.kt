@@ -1,6 +1,5 @@
 package com.siddapps.android.refrigeratorsurprise
 
-import android.util.Log
 import com.siddapps.android.refrigeratorsurprise.data.RecipeDetails
 import org.jsoup.Jsoup
 import org.threeten.bp.Duration
@@ -18,19 +17,22 @@ class HtmlParser {
         val numberOnlyPattern = Pattern.compile("-?\\d+")
 
         fun parse(url: String): RecipeDetails? {
+            val recipeDetails = RecipeDetails()
 
-            Jsoup.connect(url).get().run {
+            val jsoup = Jsoup.connect(url)
+            jsoup.get().run {
                 when {
                     url.contains(CLOSET_COOKING) -> {
                         /**Ingredients**/
+                        /**Ingredients**/
                         val ingredients = this.getElementsByClass("ingredients")
                         val ingredientArray = ingredients.tagName("recipeIngredient")[0].childNodes()
-                        val recipeDetails = RecipeDetails()
                         for ((i, node) in ingredientArray.withIndex()) {
 //                        Log.e("TAG " + i, node.childNodes()[0].toString())
                             recipeDetails.ingredients.add(node.childNodes()[0].toString())
                         }
 
+                        /**Instructions**/
                         /**Instructions**/
                         val instructions = this.getElementsByClass("instructions")
                         val instructionsArray = instructions.tagName("recipeInstructions")[0].childNodes()
@@ -39,6 +41,7 @@ class HtmlParser {
                             recipeDetails.instructions.add(node.childNodes()[0].toString())
                         }
 
+                        /**Timing**/
                         /**Timing**/
                         val details = this.getElementsByClass("details")
                         for ((i, detail) in details[0].getElementsByClass("time").withIndex()) {
@@ -57,6 +60,7 @@ class HtmlParser {
                         }
 
                         /**Serving**/
+                        /**Serving**/
                         val servings = this.getElementsByClass("yield")
                         val string = servings.tagName("recipeYield")[0].childNodes()[2].childNodes()[0].toString()
                         val matcher = numberOnlyPattern.matcher(string)
@@ -64,13 +68,11 @@ class HtmlParser {
                             recipeDetails.serving = matcher.group()
                         }
 //                    Log.e("TAG", recipeDetails.serving)
-
-                        return recipeDetails
                     }
                     url.contains(PIONEER_WOMAN) -> {
                         /**Ingredients**/
+                        /**Ingredients**/
                         val ingredientArray = this.select("span[itemprop=recipeIngredient]")
-                        val recipeDetails = RecipeDetails()
                         for ((i, ingredientNode) in ingredientArray.withIndex()) {
                             val ingredient = ingredientNode.childNodes()[0].toString()
 //                            Log.e("TAG " + i, ingredient)
@@ -78,12 +80,14 @@ class HtmlParser {
                         }
 
                         /**Instructions**/
+                        /**Instructions**/
                         val instructionsArray = this.select("span[itemprop=recipeInstructions]")
                         for ((i, node) in instructionsArray.withIndex()) {
 //                            Log.e("TAG " + i, node.childNodes()[0].toString())
                             recipeDetails.instructions.add(node.childNodes()[0].toString())
                         }
 
+                        /**Timing**/
                         /**Timing**/
                         val cookTimeArray = this.select("span[itemprop=cookTime]")
                         val cookTime = cookTimeArray[0].childNodes()[0].toString()
@@ -97,26 +101,25 @@ class HtmlParser {
 
 
                         /**Serving**/
+                        /**Serving**/
                         val servingArray = this.select("span[itemprop=recipeYield]")
                         val string = servingArray[0].childNodes()[0].toString()
                         val matcher = numberOnlyPattern.matcher(string)
                         while (matcher.find()) {
                             recipeDetails.serving = matcher.group()
                         }
-
-                        return recipeDetails
-
                     }
                     url.contains(ALL_RECIPES) -> {
                         /**Ingredients**/
+                        /**Ingredients**/
                         val ingredientArray = this.select("span[itemprop=recipeIngredient]")
-                        val recipeDetails = RecipeDetails()
                         for ((i, ingredientNode) in ingredientArray.withIndex()) {
                             val ingredient = ingredientNode.childNodes()[0].toString()
 //                            Log.e("TAG " + i, ingredient)
                             recipeDetails.ingredients.add(ingredient)
                         }
 
+                        /**Instructions**/
                         /**Instructions**/
                         val instructionsArray = this.select("span[class=recipe-directions__list--item]")
                         for ((i, node) in instructionsArray.withIndex()) {
@@ -126,6 +129,7 @@ class HtmlParser {
                             }
                         }
 
+                        /**Timing**/
                         /**Timing**/
                         val cookTimeArray = this.select("span[class=prepTime__item--time]")
                         val cookTime = cookTimeArray[0].childNodes()[0].toString()
@@ -138,20 +142,21 @@ class HtmlParser {
 
 
                         /**Serving**/
+                        /**Serving**/
                         val servingArray = this.select("div[class=subtext]")
                         val string = servingArray[0].childNodes()[0].toString()
                         val matcher = numberOnlyPattern.matcher(string)
                         while (matcher.find()) {
                             recipeDetails.serving = matcher.group()
                         }
-
-                        return recipeDetails
                     }
                     else -> {
+                        return null
                     }
                 }
             }
-            return null
+
+            return recipeDetails
         }
     }
 

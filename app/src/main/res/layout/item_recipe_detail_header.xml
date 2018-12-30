@@ -17,6 +17,7 @@
         android:background="@color/colorAccent"
         android:textColor="@android:color/white"
         android:textSize="16dp"
+        android:fontFamily="gilroyextrabold"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"

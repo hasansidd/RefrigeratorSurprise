@@ -29,6 +29,7 @@ class IngredientsFragment : Fragment(), IngredientsView {
 
     var presenter: IngredientsPresenter = IngredientsPresenterImpl()
     val ingredients: MutableList<String> = mutableListOf()
+    var clickActive: Boolean = false
     val listener = object : IngredientsAdapter.OnIngredientsClicked {
         override fun onIngredientClicked(ingredient: String) {
 
@@ -95,10 +96,16 @@ class IngredientsFragment : Fragment(), IngredientsView {
                 animLarge.start()
 //                add_ingredients_text_view.pulse(1.2f, 200)
             } else {
-                fragmentManager.add {
-                    this.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-                    add(R.id.container, RecipeFragment.newInstance(ingredients = ingredients.joinToString(",")))
-                    addToBackStack(RecipeFragment.TAG)
+                if (!clickActive) {
+                    clickActive = true
+                    fragmentManager.add {
+                        this.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                        add(R.id.container, RecipeFragment.newInstance(ingredients = ingredients.joinToString(",")))
+                        addToBackStack(RecipeFragment.TAG)
+                    }
+                    fab.postDelayed({
+                        clickActive = false
+                    }, 1500)
                 }
             }
         }

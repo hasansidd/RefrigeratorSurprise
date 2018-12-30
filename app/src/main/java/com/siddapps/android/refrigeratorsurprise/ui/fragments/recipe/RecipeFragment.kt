@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v4.app.Fragment
+import android.support.v4.app.SharedElementCallback
 import android.support.v4.view.ViewCompat
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
@@ -21,8 +22,10 @@ import com.siddapps.android.refrigeratorsurprise.ui.fragments.recipedetails.Reci
 import com.siddapps.android.refrigeratorsurprise.utils.add
 import com.siddapps.android.refrigeratorsurprise.utils.pulse
 import kotlinx.android.synthetic.main.fragment_ingredients.*
+import kotlinx.android.synthetic.main.fragment_recipe_details.*
 import kotlinx.android.synthetic.main.fragment_recipes.*
 import kotlinx.coroutines.*
+import java.lang.Exception
 import java.util.*
 
 
@@ -47,9 +50,43 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
         super.onAttach(context)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val adapter: RecipeAdapter? = recipe_recyclerview.adapter as RecipeAdapter?
+        adapter?.notifyDataSetChanged()
+    }
+
     override fun onStop() {
         presenter.stop()
         super.onStop()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setExitSharedElementCallback(object : SharedElementCallback() {
+            override fun onSharedElementStart(sharedElementNames: MutableList<String>?, sharedElements: MutableList<View>?, sharedElementSnapshots: MutableList<View>?) {
+                Log.e("TAG", "TAG")
+
+                super.onSharedElementStart(sharedElementNames, sharedElements, sharedElementSnapshots)
+            }
+            override fun onSharedElementEnd(sharedElementNames: MutableList<String>?, sharedElements: MutableList<View>?, sharedElementSnapshots: MutableList<View>?) {
+                super.onSharedElementEnd(sharedElementNames, sharedElements, sharedElementSnapshots)
+                Log.e("TAG", "TAG")
+
+            }
+        })
+        setEnterSharedElementCallback(object : SharedElementCallback() {
+            override fun onSharedElementEnd(sharedElementNames: MutableList<String>?, sharedElements: MutableList<View>?, sharedElementSnapshots: MutableList<View>?) {
+                super.onSharedElementEnd(sharedElementNames, sharedElements, sharedElementSnapshots)
+                Log.e("TAG", "TAG")
+            }
+
+            override fun onSharedElementStart(sharedElementNames: MutableList<String>?, sharedElements: MutableList<View>?, sharedElementSnapshots: MutableList<View>?) {
+                Log.e("TAG", "TAG")
+
+                super.onSharedElementStart(sharedElementNames, sharedElements, sharedElementSnapshots)
+            }
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -83,34 +120,37 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
         }
     }
 
+
     override fun onRecipeClick(recipe: Recipe, view: View?) {
         val recipeDetails = RecipeDetails()
-        recipeDetails?.name = recipe.title
-        recipeDetails?.imageUrl = recipe.imageURL
-        recipeDetails?.sourceUrl = recipe.sourceURL
+        recipeDetails.name = recipe.title
+        recipeDetails.imageUrl = recipe.imageURL
+        recipeDetails.sourceUrl = recipe.sourceURL
 
-        fragmentManager.add {
-            val imageView: View? = view?.findViewById(R.id.recipe_image)
-            val textView: View? = view?.findViewById(R.id.recipe_title)
-            val shadowView: View? = view?.findViewById(R.id.shadow)
+        try {
+            fragmentManager.add {
+                val imageView: View? = view?.findViewById(R.id.recipe_image)
+                val textView: View? = view?.findViewById(R.id.recipe_title)
+                val shadowView: View? = view?.findViewById(R.id.shadow)
 
-            val recipeDetailsFragment = RecipeDetailsFragment.newInstance(recipeDetails,
-//                        ViewCompat.getTransitionName(imageView),
-                    ViewCompat.getTransitionName(imageView),
-                    ViewCompat.getTransitionName(textView),
-                    ViewCompat.getTransitionName(shadowView))
+                val recipeDetailsFragment = RecipeDetailsFragment.newInstance(recipeDetails,
+                        ViewCompat.getTransitionName(imageView),
+                        ViewCompat.getTransitionName(textView),
+                        ViewCompat.getTransitionName(shadowView))
 
-            addSharedElement(view?.findViewById(R.id.recipe_image), ViewCompat.getTransitionName(imageView))
-            addSharedElement(view?.findViewById(R.id.recipe_title), ViewCompat.getTransitionName(textView))
-            addSharedElement(view?.findViewById(R.id.shadow), ViewCompat.getTransitionName(shadowView))
-            addToBackStack(RecipeDetailsFragment::class.java.simpleName)
-            replace(R.id.container, recipeDetailsFragment, tag)
+                addSharedElement(view?.findViewById(R.id.recipe_image), ViewCompat.getTransitionName(imageView))
+                addSharedElement(view?.findViewById(R.id.recipe_title), ViewCompat.getTransitionName(textView))
+                addSharedElement(view?.findViewById(R.id.shadow), ViewCompat.getTransitionName(shadowView))
+                addToBackStack(RecipeDetailsFragment::class.java.simpleName)
+//                replace(R.id.container, recipeDetailsFragment, tag)
+                add(R.id.container, recipeDetailsFragment, tag)
+                hide(fragmentManager.fragments[fragmentManager.fragments.size-1])
+                setReorderingAllowed(true)
 
+            }
+        } catch (e: Exception) {
+            Log.e(RecipeFragment.TAG, e.localizedMessage, e)
         }
-
-//        job = GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, null, {
-//            val recipeDetails = HtmlParser.parse(recipe.sourceURL)
-//        })
     }
 
     override fun displayRecipes(recipeResponse: RecipeResponse) {
@@ -139,12 +179,12 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     }
 
     override fun showProgress() {
-        progress_bar.visibility = View.VISIBLE
+        progress_bar_recipes.visibility = View.VISIBLE
         recipe_recyclerview.visibility = View.INVISIBLE
     }
 
     override fun hideProgress() {
-        progress_bar.visibility = View.INVISIBLE
+        progress_bar_recipes.visibility = View.INVISIBLE
         recipe_recyclerview.visibility = View.VISIBLE
     }
 
@@ -159,20 +199,21 @@ class RecipeFragment : Fragment(), RecipeView, OnRecipeClickListener {
     override fun onPause() {
         if (job != null) {
             job!!.cancel()
-            Log.e("TAG", "cancled")
+            Log.e(RecipeFragment::class.java.simpleName, "cancled")
         } else {
-            Log.e("TAG", "not canclled")
+            Log.e(RecipeFragment::class.java.simpleName, "not canclled")
         }
         super.onPause()
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         val arrayList: ArrayList<Recipe> = ArrayList()
-        for (recipe in recipes!!) {
-            arrayList.add(recipe)
+        if (recipes != null) {
+            for (recipe in recipes!!) {
+                arrayList.add(recipe)
+            }
+            savedState?.putParcelableArray("recipes", arrayList.toArray() as Array<Parcelable>?)
         }
-        savedState?.putParcelableArray("recipes", arrayList.toArray() as Array<Parcelable>?)
     }
 }

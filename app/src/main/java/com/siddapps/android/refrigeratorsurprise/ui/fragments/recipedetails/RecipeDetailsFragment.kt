@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.transition.TransitionInflater
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +17,7 @@ import com.siddapps.android.refrigeratorsurprise.utils.httpToHttps
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_recipe_details.*
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 class RecipeDetailsFragment : Fragment() {
@@ -44,6 +42,7 @@ class RecipeDetailsFragment : Fragment() {
 
     var recipeDetails: RecipeDetails? = null
     var result: MutableList<RecipeDetailItem>? = null
+    var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +67,8 @@ class RecipeDetailsFragment : Fragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val transitionNameImage = arguments.getString(EXTRA_TRANSITION_NAME_IMAGE)
             imageview.transitionName = transitionNameImage
-//            val transitionNameText = arguments.getString(EXTRA_TRANSITION_NAME_TEXT)
-//            shadow?.transitionName = transitionNameText
+            val transitionNameText = arguments.getString(EXTRA_TRANSITION_NAME_TEXT)
+            shadow?.transitionName = transitionNameText
 //            val transitionNameShadow = arguments.getString(EXTRA_TRANSITION_NAME_IMAGE)
 //            shadow?.transitionName = transitionNameShadow
         }
@@ -96,9 +95,19 @@ class RecipeDetailsFragment : Fragment() {
 
     }
 
+    override fun onPause() {
+        if (job != null) {
+            job!!.cancel()
+            Log.e(RecipeDetailsFragment::class.java.simpleName, "cancled")
+        } else {
+            Log.e(RecipeDetailsFragment::class.java.simpleName, "not canclled")
+        }
+        super.onPause()
+    }
+
     fun start() {
-        GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, null, {
-            showProgress()
+        showProgress()
+        job = GlobalScope.launch {
             recipeDetails = HtmlParser.parse(recipeDetails?.sourceUrl!!)
             val strings = mutableListOf<RecipeDetailItem>()
             if (recipeDetails?.timings != null && recipeDetails?.timings!!.isNotEmpty()) {
@@ -124,8 +133,16 @@ class RecipeDetailsFragment : Fragment() {
                 }
             }
             result = strings
-            update()
-        })
+            withContext(Dispatchers.Main) {
+                try {
+                    val adapter = recycler_view.adapter as RecipeDetailAdapter
+                    adapter.update(result!!)
+                    hideProgress()
+                } catch (e: Exception) {
+                    Log.e("ygh", e.localizedMessage, e)
+                }
+            }
+        }
     }
 
     fun hideProgress() {
@@ -133,8 +150,7 @@ class RecipeDetailsFragment : Fragment() {
     }
 
     private suspend fun update() {
-       val adapter = recycler_view.adapter as RecipeDetailAdapter
-        adapter.update(result!!)
+
     }
 
     fun showProgress() {
